@@ -5,6 +5,29 @@ export const upload = async (config, file) => {
 	const { service } = config;
 
 	switch (service) {
+		case "salesforce-service-cloud": {
+			const { baseURL, orgId, chatKey, fileToken } = config;
+			const uploadUrl = baseURL + "?orgId=" + encodeURIComponent(orgId) +
+             "&chatKey=" + encodeURIComponent(chatKey);
+             "&fileToken=" + encodeURIComponent(fileToken);
+             "&encoding=UTF-8"; 
+
+			const formData = FormData();
+			formData.append("file", file);
+			formData.append("filename", file.name)
+
+			return Axios.post(uploadUrl)
+				.then(res => {
+					return { success: true, result: res };
+				})
+				.catch(err => {
+					return {
+						success: false,
+						reason: err,
+					};
+				});
+		}
+
 		case "amazon-s3": {
 			const { uploadUrl, downloadUrl } = config;
 
